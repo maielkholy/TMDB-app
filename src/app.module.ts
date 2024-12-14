@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { MoviesModule } from './movies/movies.module';
 import * as dotenv from 'dotenv';
+import { DataMigrationService } from './migration.service';
 
 dotenv.config();
 
