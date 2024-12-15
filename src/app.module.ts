@@ -6,7 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { MoviesModule } from './movies/movies.module';
 import * as dotenv from 'dotenv';
-import { DataMigrationService } from './migration.service';
+import { RedisModule } from './redis/redis.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as process from 'node:process';
 
 dotenv.config();
 
@@ -14,6 +16,12 @@ dotenv.config();
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    CacheModule.register({
+      store: 'ioredis', // Use ioredis as the Redis store
+      host: process.env.REDIS_HOST, // Redis host (can be the Docker container name if using Docker)
+      port: process.env.REDIS_PORT, // Redis port
+      ttl: 3600, // Default TTL for cached data (in seconds)
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -27,6 +35,7 @@ dotenv.config();
     }),
     UsersModule,
     MoviesModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
