@@ -15,29 +15,35 @@ export class DataMigrationService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const data = await this.fetchData();
+    let data = [];
+    const pages = 5;
+    for (let i = 1; i <= pages; i++) {
+      data = data.concat(await this.fetchData(i));
+    }
     await this.saveData(data);
   }
   async saveData(data: any[]): Promise<void> {
-    const resources = data['results'] as Movie[];
-    await this.resourceRepository.save(resources);
+    const resources = data as Movie[];
+    const movies = Array.from(
+      new Map(resources.map((movie) => [movie.id, movie])).values(),
+    );
+    await this.resourceRepository.upsert(movies, ['id']);
   }
-  async fetchData(): Promise<any[]> {
+  async fetchData(page: number): Promise<any[]> {
+    const url = `${process.env.TMDB_URL}&page=${page}`;
     const options = {
       method: 'GET',
-      url: 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc',
+      url: url,
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${process.env.TMDB_AUTH_TOKEN}`,
       },
     };
-
     return new Promise((resolve, reject) => {
       axios
         .request(options)
         .then((res) => {
-          console.log(res.data);
-          resolve(res.data); // resolve the promise with the response data
+          resolve(res.data.results); // resolve the promise with the response data
         })
         .catch((err) => {
           console.error(err);

@@ -2,43 +2,30 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('movie')
 export class Movie {
-  @Column('boolean', { default: false })
-  /** Indicates if the content is for adults */
-  adult: boolean;
-
   @Column('simple-array', { default: [] })
-  /** Array of genre IDs associated with the movie */
   genre_ids: number[];
 
   @PrimaryColumn('int', { unique: true, nullable: false })
-  /** Unique identifier for the movie */
   id: number;
 
-  @Column('varchar', { length: 255 })
-  /** Original language of the movie */
+  @Column('varchar', { length: 255, nullable: true })
   original_language: string;
 
-  @Column('varchar', { length: 255 })
-  /** Original title of the movie */
+  @Column('varchar', { length: 255, nullable: true })
   original_title: string;
 
-  @Column('text')
-  /** Short description of the movie */
+  @Column('text', { nullable: true })
   overview: string;
 
-  @Column('varchar', { length: 255 })
-  /** Release date of the movie */
+  @Column('varchar', { length: 255, nullable: true })
   release_date: string;
 
-  @Column('varchar')
-  /** Title of the movie */
+  @Column('varchar', { nullable: true })
   title: string;
 
-  @Column('float')
-  /** Average vote score */
+  @Column('float', { default: 0.0 })
   vote_average: number;
 
-  @Column('int')
-  /** Total number of votes */
+  @Column('int', { default: 0 })
   vote_count: number;
 }
